@@ -139,8 +139,8 @@ Need to look at sub panel (combined panels)
 
 
 # Updates in 3.0.3 (dev)
-* Fixed setting SWG setpoint for PDA panels across multiple panel versions. Handles diverse menu formats (e.g. "SET TO", "SET POOL TO:", "Set Pool to:") using loose matching. (#493)
-* Added `pda_force_home_onprogram` config option for PDA panels. When enabled, navigates to HOME menu before any programming sequence to prevent timing issues where commands could be sent to the wrong menu. (#492)
+* Fixed setting SWG setpoint for PDA panels. Reworked AquaPure menu handling to support diverse menu formats across panel versions (e.g. "SET TO", "SET POOL TO:", "Set Pool to:") using loose matching. Also detects whether the setpoint value is already selected or requires choosing pool/spa first.
+* PDA home-first navigation fix: go back to HOME menu before starting any programming sequence to prevent timing issues where the panel and AqualinkD can get out of sync. Controlled by new `pda_force_home_onprogram` config option (default off). (Thanks to locnho, #492)
 * Fixed typo in Makefile (`realease` → `release`) and added missing closing paren in `dockerbuildnrun` target. (#494)
 * Fixed bugs in `remote_install.sh`: `FROM_CURL=$FASE` typo → `$FALSE`, trailing whitespace, and `else` → `elif` logic bug in `check_can_upgrade`. (#494)
 * Added PDA debug logging for packet type changes.
