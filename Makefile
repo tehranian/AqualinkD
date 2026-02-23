@@ -186,7 +186,7 @@ RSMON_AMD64 = ./release/rs485mon-amd64
 
 
 # Rules with no targets
-.PHONY: clean clean-buildfiles buildrelease release install
+.PHONY: clean clean-buildfiles buildrelease release install install-hooks
 
 # Default target
 .DEFAULT_GOAL := all
@@ -288,6 +288,10 @@ debug: $(MAIN) $(RSMON)
 #install: $(MAIN)
 install:
 	./release/install.sh from-make
+
+install-hooks:
+	@ln -sf ../../.githooks/commit-msg .git/hooks/commit-msg
+	@echo "Git hooks installed."
 
 
 # Rules to compile

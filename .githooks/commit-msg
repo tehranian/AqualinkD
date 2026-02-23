@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#
+# commit-msg hook — enforces commit message conventions
+#
+# Rules:
+#   1. Subject line must start with a capital letter
+#   2. Subject line max 72 characters
+#   3. Subject line must not end with a period
+#   4. Blank line required between subject and body (if body exists)
+#   5. Vague single-word subjects rejected (Update, Fix, Change, etc.)
+#   6. Imperative mood hint: rejects "Added", "Fixed", "Updated", etc.
+#
+
+set -euo pipefail
+
+COMMIT_MSG_FILE="$1"
+
+# Strip comment lines (lines starting with #) and trailing blank lines
+msg=$(sed '/^#/d' "$COMMIT_MSG_FILE")
+subject=$(echo "$msg" | head -n1)
+
+# Allow empty commits (git will reject them separately)
+if [ -z "$subject" ]; then
+    exit 0
+fi
+
+errors=""
+
+# 1. Subject must start with a capital letter
+first_char=$(echo "$subject" | cut -c1)
+if echo "$first_char" | grep -qE '^[a-z]'; then
+    errors="${errors}\n  - Subject must start with a capital letter: '${subject}'"
+fi
+
+# 2. Subject line max 72 characters
+subject_len=${#subject}
+if [ "$subject_len" -gt 72 ]; then
+    errors="${errors}\n  - Subject exceeds 72 characters (${subject_len}): '${subject}'"
+fi
+
+# 3. Subject must not end with a period
+if echo "$subject" | grep -qE '\.$'; then
+    errors="${errors}\n  - Subject must not end with a period: '${subject}'"
+fi
+
+# 4. Blank line between subject and body
+line_count=$(echo "$msg" | wc -l | tr -d ' ')
+if [ "$line_count" -gt 1 ]; then
+    second_line=$(echo "$msg" | sed -n '2p')
+    if [ -n "$second_line" ]; then
+        errors="${errors}\n  - Missing blank line between subject and body"
+    fi
+fi
+
+# 5. Reject vague single-word subjects
+if echo "$subject" | grep -qxE '(Update|Fix|Change|Refactor|Improve|Cleanup|Misc|WIP)'; then
+    errors="${errors}\n  - Subject is too vague — describe what was changed: '${subject}'"
+fi
+
+# 6. Imperative mood hint — reject past tense opening words
+first_word=$(echo "$subject" | awk '{print $1}')
+if echo "$first_word" | grep -qxE '(Added|Fixed|Updated|Changed|Removed|Deleted|Refactored|Improved|Moved|Renamed)'; then
+    errors="${errors}\n  - Use imperative mood (e.g., 'Add' not 'Added'): '${subject}'"
+fi
+
+if [ -n "$errors" ]; then
+    printf '\nCommit message rejected:%b\n\n' "$errors"
+    echo "See CONTRIBUTING.md for commit message guidelines."
+    exit 1
+fi
