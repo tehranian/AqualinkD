@@ -518,6 +518,7 @@ void _aq_programmer_(program_type r_type, char *args, aqkey *button, int value, 
       type = AQ_SET_IAQTOUCH_PUMP_RPM;
     else {
       LOG(PROG_LOG, LOG_ERR, "Can only change pump RPM with an extended device id\n",type);
+      free(programmingthread);
       return;
     }
   } else if (r_type == AQ_SET_PUMP_VS_PROGRAM) {
@@ -525,6 +526,7 @@ void _aq_programmer_(program_type r_type, char *args, aqkey *button, int value, 
       type = AQ_SET_IAQTOUCH_PUMP_VS_PROGRAM;
     else {
       LOG(PROG_LOG, LOG_ERR, "Can only change pump VS Program with an iAqualink Touch device id\n",type);
+      free(programmingthread);
       return;
     }
   }
