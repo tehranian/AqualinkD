@@ -589,7 +589,7 @@ int build_device_JSON(struct aqualinkdata *aqdata, char* buffer, int size, bool 
         aqdata->sensors[i].label,
         "on",
         ((homekit)?2:0),
-        ((homekit_f)?aqdata->sensors[i].value:aqdata->sensors[i].value));
+        aqdata->sensors[i].value);
       }
     }
   }

@@ -536,7 +536,7 @@ void printHex(char *pk, int length)
   int i=0;
   for (i=0;i<length;i++)
   {
-    printf("0x%02hhx|",pk[i]);
+    printf("0x%02hhx|",(unsigned char)pk[i]);
   }
 }
 

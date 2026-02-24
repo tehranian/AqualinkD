@@ -810,7 +810,7 @@ uint16_t getPanelBitmaskFromName(const char *str)
   }
 
   i=3;
-  while(str[i] != ' ' && i < strlen(str)) {i++;}
+  while(i < strlen(str) && str[i] != ' ') {i++;}
   
   if (str[i+1] == 'O' || str[i+1] == 'o') {
     paneltype_mask |= RSP_SINGLE;
@@ -861,7 +861,7 @@ void setPanelByName(struct aqualinkdata *aqdata, const char *str)
   size = setSizeMask(size);
 
   i=3;
-  while(str[i] != ' ' && i < strlen(str)) {i++;}
+  while(i < strlen(str) && str[i] != ' ') {i++;}
   
   if (str[i+1] == 'O' || str[i+1] == 'o') {
     combo = false;
@@ -900,8 +900,8 @@ aqkey *addVirtualButton(struct aqualinkdata *aqdata, char *label, int vindex) {
   if (vindex == 0) {
     //printf(" TOTAL=%d VSTART=%d\n",aqdata->total_buttons,aqdata->virtual_button_start);
     //index = aqdata->total_buttons - aqdata->virtual_button_start + 1;
-    if (aqdata->virtual_button_start <= 0) {
-      // Their are no vbuttons, so start at 1.
+    if (aqdata->virtual_button_start == 0) {
+      // There are no vbuttons, so start at 1.
       index = 1;
     } else {
       index = aqdata->total_buttons - aqdata->virtual_button_start + 1;
@@ -910,14 +910,14 @@ aqkey *addVirtualButton(struct aqualinkdata *aqdata, char *label, int vindex) {
   }
   
 
-  if (aqdata->virtual_button_start <= 0) {
+  if (aqdata->virtual_button_start == 0) {
     aqdata->virtual_button_start = aqdata->total_buttons;
   }
   aqkey *button = &aqdata->aqbuttons[aqdata->total_buttons++];
 
   button->led = malloc(sizeof(aqled));
  
-  char *name = malloc(sizeof(char*) * 10);
+  char *name = malloc(sizeof(char) * 10);
   snprintf(name, 9, "%s%d", BTN_VAUX, index);
   button->name = name;
 
@@ -925,7 +925,7 @@ aqkey *addVirtualButton(struct aqualinkdata *aqdata, char *label, int vindex) {
   //button->special_mask_ptr = malloc(sizeof(altlabel_detail));
   //((altlabel_detail *)button->special_mask_ptr)->altlabel = NUL;
 
-  if (label == NULL || strlen(label) <= 0) {
+  if (label == NULL || strlen(label) == 0) {
     //button->label = name; 
     setVirtualButtonLabel(button, name);
   } else {
@@ -1105,7 +1105,7 @@ void initPanelButtons(struct aqualinkdata *aqdata, bool rs, int size, bool combo
     aqdata->aqbuttons[index].rssd_code = RS_SA_AUX6;
     index++;
 
-    aqdata->aqbuttons[index].led = &aqdata->aqualinkleds[1-1];
+    aqdata->aqbuttons[index].led = &aqdata->aqualinkleds[0];
     aqdata->aqbuttons[index].led->state = LED_S_UNKNOWN;
     aqdata->aqbuttons[index].label = rs?name2label(BTN_AUX7):cleanalloc(BTN_PDA_AUX7);
     aqdata->aqbuttons[index].name = BTN_AUX7;
@@ -1143,8 +1143,8 @@ void initPanelButtons(struct aqualinkdata *aqdata, bool rs, int size, bool combo
     aqdata->aqbuttons[index].special_mask = 0;
     aqdata->aqbuttons[index].rssd_code = RS_SA_AUX9;
     index++;
-  
-    aqdata->aqbuttons[index].led = &aqdata->aqualinkleds[1-1];
+
+    aqdata->aqbuttons[index].led = &aqdata->aqualinkleds[0];
     aqdata->aqbuttons[index].led->state = LED_S_UNKNOWN;
     aqdata->aqbuttons[index].label = name2label(BTN_AUXB3);  // AUX10
     aqdata->aqbuttons[index].name = BTN_AUXB3;
@@ -1582,23 +1582,23 @@ void programDeviceLightBrightness(struct aqualinkdata *aqdata, int value, int de
     value = AQ_CLAMP(value,0,100);
   }
 
+  if  (light == NULL || (light->lightType != LC_DIMMER2 && light->lightType != LC_DIMMER)) {
+    LOG(PANL_LOG,LOG_ERR, "Can not set light brightness on device '%s'\n",aqdata->aqbuttons[deviceIndex].label);
+    return;
+  }
+
   if (light->lightType == LC_DIMMER && value !=0 && value != 25&& value != 50 && value != 75 && value != 100) {
     // Make sure we have 0/25/50/75 for LC_DIMMER
     LOG(PANL_LOG,LOG_DEBUG, "Dimmer value %d is not valid, rounding to nearest 25!\n",value);
     value = dimmer_mode_to_percent(dimmer_percent_to_mode_index(value));
   }
-    
+
   if (expectMultiple) {
     // Queue up a request, this will call us back through with expectMultiple=false
     time(&aqdata->unactioned.requested);
     aqdata->unactioned.value = value;
     aqdata->unactioned.type = LIGHT_BRIGHTNESS;
     aqdata->unactioned.id = deviceIndex;
-    return;
-  }
-
-  if  (light == NULL || (light->lightType != LC_DIMMER2 && light->lightType != LC_DIMMER)) {
-    LOG(PANL_LOG,LOG_ERR, "Can not set light brightness on device '%s'\n",aqdata->aqbuttons[deviceIndex].label);
     return;
   }
  

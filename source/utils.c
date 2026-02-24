@@ -89,7 +89,7 @@ void setLoggingPrms(int level , bool deamonized, char* log_file, char *error_mes
   _cfg_log_level = _log_level;
   _cfg_log2file = _log2file;
   
-  if (log_file == NULL || strlen(log_file) <= 0) {
+  if (log_file == NULL || strlen(log_file) == 0) {
     _log2file = false;
   } else {
     _log2file = true;
@@ -412,7 +412,7 @@ char *stripwhitespace(char *str)
   char *end;
   char *start = str;
 
-  if(*start == 0 || strlen(str) <= 0 )  // All spaces?
+  if(*start == 0 || strlen(str) == 0 )  // All spaces?
     return str;
 
 

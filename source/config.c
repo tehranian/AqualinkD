@@ -882,7 +882,7 @@ bool setConfigValue(struct aqualinkdata *aqdata, char *param, char *value) {
         }
       }
 
-      if (strlen(cleanwhitespace(value)) <= 0) {
+      if (strlen(cleanwhitespace(value)) == 0) {
         LOG(AQUA_LOG,LOG_INFO,"Set configuration option `%s` to default since value is blank\n",_cfgParams[i].name );
         set_cfg_parm_to_default(&_cfgParams[i]);
         return true;
@@ -946,7 +946,7 @@ bool setConfigValue(struct aqualinkdata *aqdata, char *param, char *value) {
 
 //#endif
 
-if (strlen(cleanwhitespace(value)) <= 0) {
+if (strlen(cleanwhitespace(value)) == 0) {
   LOG(AQUA_LOG,LOG_WARNING,"Configuration value is blank for option `%s`, Ignoring\n",param );
   return true;
 }
@@ -1317,7 +1317,7 @@ aqkey *getVirtualButton(struct aqualinkdata *aqdata, int num)
   //snprintf(vbname, 9, "%s%d", BTN_VAUX, num);
 
 
-  if (aqdata->virtual_button_start <= 0) {
+  if (aqdata->virtual_button_start == 0) {
     return addVirtualButton(aqdata, NULL, num);
   }
 
@@ -2298,8 +2298,8 @@ bool writeCfg (struct aqualinkdata *aqdata)
   // Testing shit
   if (_aqconfig_.save_debug_log_masks) {
     for (int i = 0; i < (sizeof(logmask_t) * CHAR_BIT); i++) {
-      if(isDebugLogMaskSet((1 << i))) {
-        fprintf(fp, "debug_log_mask=%d\n", (1 << i));
+      if(isDebugLogMaskSet(((logmask_t)1 << i))) {
+        fprintf(fp, "debug_log_mask=%d\n", (int)((logmask_t)1 << i));
       }
     }
     fprintf(fp,"\n");

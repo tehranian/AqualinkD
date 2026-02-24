@@ -320,8 +320,7 @@ bool isSWGDeviceErrorState(unsigned char status)
   if (status == SWG_STATUS_NO_FLOW ||
       status == SWG_STATUS_CHECK_PCB ||
       status == SWG_STATUS_LOW_TEMP ||
-      status == SWG_STATUS_HIGH_CURRENT ||
-      status == SWG_STATUS_NO_FLOW)
+      status == SWG_STATUS_HIGH_CURRENT)
       // Maybe add CLEAN_CELL and GENFAULT here
     return true;
   else
@@ -513,8 +512,6 @@ aqledstate get_swg_led_state(struct aqualinkdata *aqdata)
     break;
   case SWG_STATUS_CLEAN_CELL:
     return (aqdata->swg_percent > 0?ON:ENABLE);
-      return ENABLE;
-    break;
   case SWG_STATUS_LOW_VOLTS:
     return ENABLE;
     break;
@@ -1073,10 +1070,8 @@ bool processPacketFromJandyChemAnalyzer(unsigned char *packet_buffer, int packet
       if (packet_buffer[3] == 0x28 && packet_buffer[5] == 0x01) {
         float ph = ph_from_counts( ((packet_buffer[6] * 256) + packet_buffer[7]),
                                     aqdata->temp_units==FAHRENHEIT?roundf(degFtoC(watertemp)):watertemp);
-        LOG(DJAN_LOG, LOG_INFO, "Guess at caculating pH=%f\n", ph);                            
-      }
-    } else if (previous_packet_to == 0x84){
-      if (packet_buffer[3] == 0x28 && packet_buffer[5] == 0x02) {
+        LOG(DJAN_LOG, LOG_INFO, "Guess at caculating pH=%f\n", ph);
+      } else if (packet_buffer[3] == 0x28 && packet_buffer[5] == 0x02) {
         float orp = orp_from_counts( ((packet_buffer[6] * 256) + packet_buffer[7]));
         LOG(DJAN_LOG, LOG_INFO, "Guess at caculating ORP=%f\n", orp);
       }

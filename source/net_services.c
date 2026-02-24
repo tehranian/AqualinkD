@@ -2296,7 +2296,6 @@ void *net_services_thread( void *ptr )
     _keepNetServicesRunning = false;
     LOG(AQUA_LOG,LOG_ERR, "Can not start webserver on port %s.\n", _aqconfig_.listen_address);
     exit(EXIT_FAILURE);
-    goto f_end;
   }
 
   while (_keepNetServicesRunning == true)
@@ -2341,7 +2340,6 @@ void *net_services_thread( void *ptr )
     } 
   }
 
-f_end:
   LOG(NET_LOG,LOG_NOTICE, "Stopping network services thread\n");
   mg_mgr_free(&_mgr);
 

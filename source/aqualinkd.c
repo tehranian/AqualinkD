@@ -174,8 +174,8 @@ bool checkAqualinkTime()
     LOG(AQUA_LOG,LOG_DEBUG, "time not checked, will check in %d seconds\n", TIME_CHECK_INTERVAL - time_difference);
     return true;
   }
-  else if (strlen(_aqualink_data.date) <=0 ||
-           strlen(_aqualink_data.time) <=0) 
+  else if (strlen(_aqualink_data.date) == 0 ||
+           strlen(_aqualink_data.time) == 0)
   {
     LOG(AQUA_LOG,LOG_DEBUG, "time not checked, no time from panel\n");
     return true;
@@ -1066,7 +1066,7 @@ void main_loop()
       blank_read++;
       LOG(AQUA_LOG,LOG_DEBUG, "Blank RS485 read\n");
     }
-    else if (packet_length > 0) {
+    else {
       blank_read = 0;
       if (i++ > 2000) {
         if(!got_probe) {
@@ -1109,7 +1109,7 @@ void main_loop()
 
   //At this point we should have correct ID and seen probes on those ID's.
   // Setup the panel
-  if (_aqconfig_.device_id <= 0x08 && _aqconfig_.device_id >= 0x0B && _aqconfig_.device_id != 0x60 && _aqconfig_.device_id != 0x33) {
+  if ((_aqconfig_.device_id <= 0x08 || _aqconfig_.device_id >= 0x0B) && _aqconfig_.device_id != 0x60 && _aqconfig_.device_id != 0x33) {
     LOG(AQUA_LOG,LOG_ERR, "Aqualink daemon has no valid device_id, can't connect to control panel");
     //_aqualink_data.panelstatus = NO_IDS_ERROR;
     RemoveAQDstatusMask(CONNECTING); // Not sure if we should remove this

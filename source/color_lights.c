@@ -198,7 +198,7 @@ bool is_valid_light_mode(clight_type type, int index)
     }
   }
   
-  if (index < 0 || index > LIGHT_COLOR_OPTIONS || _color_light_options[type][index] == NULL ){
+  if (index < 0 || index >= LIGHT_COLOR_OPTIONS || _color_light_options[type][index] == NULL ){
     return false;
   }
 
@@ -283,9 +283,9 @@ const char *get_currentlight_mode_name(clight_detail light, emulation_type proto
     return "";
   }
 
-  if (light.currentValue < 0 || light.currentValue > LIGHT_COLOR_OPTIONS ){
+  if (light.currentValue < 0 || light.currentValue >= LIGHT_COLOR_OPTIONS ){
     return "";
-  } 
+  }
 
   if (_color_light_options[light.lightType][light.currentValue] == NULL) {
     return "";
@@ -312,9 +312,9 @@ const char *get_currentlight_mode_name(clight_detail light, emulation_type proto
 
 const char *light_mode_name(clight_type type, int index, emulation_type protocol)
 {
-  if (index < 0 || index > LIGHT_COLOR_OPTIONS ){
+  if (index < 0 || index >= LIGHT_COLOR_OPTIONS ){
     return "";
-  } 
+  }
 
   if (_color_light_options[type][index] == NULL) {
     return "";
@@ -398,9 +398,9 @@ bool set_currentlight_value(clight_detail *light, int index)
       SET_IF_CHANGED(light->currentValue, index, rtn);
   } else {
   // We want to leave the last color, so if 0 don't do anything, but set to 0 if bad value
-    if (index <= 0 || index > LIGHT_COLOR_OPTIONS) {
+    if (index <= 0 || index >= LIGHT_COLOR_OPTIONS) {
       SET_IF_CHANGED(light->currentValue, 0, rtn);
-    } else if (index > 0 && index < LIGHT_COLOR_OPTIONS) {
+    } else {
       SET_IF_CHANGED(light->currentValue, index, rtn);
       //light->lastValue = index;
     }
